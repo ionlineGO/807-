@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SDGs 807 密室逃脫</title>
+<title>SDGs 大洋洲 807 密室逃脫</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f1f5ef;--card:#fff;--tx:#1d2b22;--mut:#5d6b62;--bd:#d0dad3;--ac:#2e7d4f}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111812;--card:#1c2820;--tx:#e8f0ea;--mut:#9db0a3;--bd:#33463a;--ac:#4cc17f}}
@@ -33,9 +33,9 @@ input.cd{font-size:1.8rem;text-align:center;letter-spacing:.4em;width:100%;margi
 <div class="card"><b>📝 線索紀錄</b><div id="log" style="margin-top:4px;color:var(--mut)">尚無線索</div></div>
 </main><div id="modal"></div>
 <script>
-const STG=[{n:"永續能源",s:7,f:"SDG 7：確保人人都能取得可負擔、可靠、永續的能源。節電、使用再生能源是日常就能做到的行動。"},
-{n:"消除飢餓",s:2,f:"SDG 2：消除飢餓，實現糧食安全、改善營養並促進永續農業。均衡飲食與減少食物浪費都很重要。"},
-{n:"消除貧窮",s:1,f:"SDG 1：消除各地一切形式的貧窮。隨手捐發票，能幫助老人、身心障礙者與貧困家庭。"}];
+const STG=[{n:"永續能源",s:7,f:"SDG 7：確保人人都能取得可負擔、可靠、永續的能源。大洋洲的澳洲是全球屋頂太陽能普及率最高的國家之一，許多太平洋島國也積極發展太陽能與風能。"},
+{n:"消除飢餓",s:2,f:"SDG 2：消除飢餓，實現糧食安全、改善營養並促進永續農業。大洋洲的紐西蘭與澳洲是重要的乳品與農產出口地，太平洋島國則靠芋頭、椰子與漁業維生，氣候變遷讓糧食安全更需要守護。"},
+{n:"消除貧窮",s:1,f:"SDG 1：消除各地一切形式的貧窮。隨手捐發票，能幫助老人、身心障礙者與貧困家庭。太平洋島國受海平面上升與氣候災害威脅，需要國際合作與支持，一份小小的捐贈也能傳遞關懷。"}];
 const O=[
 {x:62,y:50,e:"🌀",n:"左前方電扇開關",t:"sw",v:8,k:"fl"},
 {x:430,y:50,e:"💡",n:"右前方電燈開關",t:"sw",v:2,k:"lr"},
@@ -46,8 +46,9 @@ const O=[
 {x:200,y:322,e:"🏯",n:"發票捐贈罐",t:"jar"},
 {x:330,y:322,e:"📄",n:"愛心公告",t:"d",s:"愛心公告：發票捐贈所得，將用於救助「老人」、「身心障礙者（殘）」與「貧窮家庭（窮）」。",lg:1},
 {x:44,y:180,e:"📚",n:"書櫃",t:"d",s:"書中夾著紙條：「歡迎來到 807 密室！離開前須通過三關：能源、飢餓、貧窮。四個開關的數字，要到總控箱輸入。」",lg:1},
-{x:160,y:46,e:"🕐",n:"時鐘",t:"d",s:"時鐘停在 8 點 07 分，似乎在暗示這間教室的名字。"},
-{x:120,y:322,e:"🧰",n:"置物櫃",t:"d",s:"裡面只有一套體育服和一顆籃球。"},
+{x:160,y:46,e:"🕐",n:"時鐘",t:"d",s:"時鐘停在 8 點 07 分，似乎在暗示這間教室的名字。旁邊貼著澳洲、紐西蘭、斐濟的時區貼紙。"},
+{x:120,y:322,e:"🏄",n:"衝浪板置物櫃",t:"d",s:"裡面只有一塊衝浪板和潛水鏡，沒有線索。大洋洲的孩子從小就愛海洋。"},
+{x:370,y:46,e:"🗺️",n:"大洋洲地圖",t:"d",s:"大洋洲包含澳洲、紐西蘭、巴布亞紐幾內亞，以及斐濟、薩摩亞、吐瓦魯、吉里巴斯等許多太平洋島國。海平面上升是島國面臨的重大挑戰。",lg:1},
 {x:446,y:222,e:"🚪",n:"教室大門",t:"door"}];
 const RC=[[110,120,64,34],[200,120,64,34],[290,120,64,34],[110,200,64,34],[200,200,64,34],[290,200,64,34],[320,66,60,24]];
 const cv=document.getElementById("cv"),cx=cv.getContext("2d");
@@ -70,10 +71,10 @@ if(f==1){cx.fillStyle="#d94f4f";cx.fillRect(x-7,y-4-b,14,11)}
 cx.fillStyle="#f1c9a0";cx.fillRect(x-7,y-17-b,14,12);
 cx.fillStyle="#3a2a1a";cx.fillRect(x-8,y-19-b,16,f==1?12:5);
 cx.fillStyle="#222";if(f==0){cx.fillRect(x-4,y-11-b,2,3);cx.fillRect(x+2,y-11-b,2,3)}if(f==2)cx.fillRect(x-6,y-11-b,2,3);if(f==3)cx.fillRect(x+4,y-11-b,2,3)}
-function draw(){cx.fillStyle="#6b5a48";cx.fillRect(0,0,480,360);
-for(let i=0;i<12;i++)for(let j=0;j<8;j++){cx.fillStyle=(i+j)%2?"#e9dcc3":"#dfd0b2";cx.fillRect(24+i*38,24+j*39,38,39)}
+function draw(){cx.fillStyle="#2f6f8f";cx.fillRect(0,0,480,360);
+for(let i=0;i<12;i++)for(let j=0;j<8;j++){cx.fillStyle=(i+j)%2?"#f3e7c9":"#e9dbb4";cx.fillRect(24+i*38,24+j*39,38,39)}
 cx.fillStyle="#222";cx.fillRect(190,24,100,20);cx.fillStyle="#7a4a21";cx.fillRect(456,190,24,64);
-cx.fillStyle="#fff";cx.font="bold 11px sans-serif";cx.textAlign="center";cx.fillText("807 教室",430,336);
+cx.fillStyle="#fff";cx.font="bold 11px sans-serif";cx.textAlign="center";cx.fillText("807 大洋洲教室",420,346);cx.font="16px sans-serif";["🦘","🐨","🥝","🏝️","🌺","🐠","🦘","🐢"].forEach((e,i)=>cx.fillText(e,40+i*58,12));["🐠","🏄","🌴","🐋","🥥","🦜"].forEach((e,i)=>cx.fillText(e,40+i*66,346));
 for(const r of RC){cx.fillStyle="#a8743c";cx.fillRect(r[0],r[1],r[2],r[3]);cx.strokeStyle="#6b4520";cx.strokeRect(r[0],r[1],r[2],r[3])}
 cx.font="26px sans-serif";cx.textBaseline="middle";
 for(const o of O){if(o===near){cx.strokeStyle="#ffd700";cx.lineWidth=3;cx.beginPath();cx.arc(o.x,o.y,22,0,7);cx.stroke()}
@@ -99,7 +100,7 @@ function ctl(){M(`<span class="badge">SDG 7</span><h3>🔌 電源總控箱</h3><
 function tryCtl(){if(document.getElementById("cd").value=="2807")pass(1,"<p>電燈亮起、電扇轉動、大屏開機——密碼 <b>2807</b> 正確，教室電力恢復！</p>");else document.getElementById("dm").textContent="❌ 密碼錯誤，檢查四個開關的順序與數字。"}
 const NU=[["🍚🌽🥔","全穀雜糧類"],["🐟🥚🍗","豆魚蛋肉類"],["🥛🧀","乳品類"],["🥬🥕","蔬菜類"],["🍎🍌","水果類"],["🥜🫒","油脂與堅果種子類"]];
 function nut(){const names=NU.map(a=>a[1]),opts=`<option value="">選擇</option>`+names.map(n=>`<option>${n}</option>`).join("");const rows=NU.map((a,i)=>[a[0],i]).sort(()=>Math.random()-.5);
-M(`<span class="badge">SDG 2</span><h3>🥗 營養均衡公告</h3><p>公告被撕成碎片。請把食物配對到正確的「六大類營養來源」，拼回完整公告。</p>${rows.map(r=>`<div class="nr"><span style="font-size:1.5rem;min-width:80px">${r[0]}</span><select id="n${r[1]}">${opts}</select></div>`).join("")}<div id="nm" style="min-height:1.4em"></div><button class="main" onclick="tryNut()">拼合公告</button> <button class="main gr" onclick="closeM()">返回</button>`)}
+M(`<span class="badge">SDG 2</span><h3>🥗 營養均衡公告</h3><p>這是大洋洲主題週的公告：紐西蘭奇異果、澳洲堅果、太平洋島嶼的芋頭與椰子……但它被撕成碎片。請把食物配對到正確的「六大類營養來源」，拼回完整公告。</p>${rows.map(r=>`<div class="nr"><span style="font-size:1.5rem;min-width:80px">${r[0]}</span><select id="n${r[1]}">${opts}</select></div>`).join("")}<div id="nm" style="min-height:1.4em"></div><button class="main" onclick="tryNut()">拼合公告</button> <button class="main gr" onclick="closeM()">返回</button>`)}
 function tryNut(){let ok=0;NU.forEach((a,i)=>{const s=document.getElementById("n"+i);const g=s.value==a[1];if(g)ok++;s.style.borderColor=g?"#2e7d4f":"#c0392b"});
 if(ok==6)pass(2,`<p>六大類營養來源：${NU.map(a=>a[1]).join("、")}。</p>`);else document.getElementById("nm").textContent=`❌ 答對 ${ok}/6，紅框的再想想。`}
 let jr=[];
@@ -110,10 +111,10 @@ function tryJar(){if(jr.join("")=="老殘窮")pass(3,`<div class="cp">橫批：�
 function door(){if(stage<3){say(`🚪 大門鎖住了。你已通過 ${stage}/3 關，需要依序通過：永續能源、消除飢餓、消除貧窮。`);return}
 M(`<h3>🚪 807 密室大門</h3><p>請依 SDGs「通過關卡的編號歷程」輸入 3 位數逃脫密碼。</p><input class="cd" id="pw" maxlength="3" inputmode="numeric" placeholder="???"><div id="dm" style="min-height:1.4em"></div><button class="main" onclick="tryPw()">開鎖</button> <button class="main gr" onclick="closeM()">返回</button>`)}
 function tryPw(){if(document.getElementById("pw").value=="721"){const s=Math.floor((performance.now()-t0)/1000);paused=true;
-M(`<div style="text-align:center"><h2>🎓 成功逃出 807 密室！</h2><p>逃脫密碼：<b>7 → 2 → 1</b></p><p>用時 ${s} 秒，密碼輸入錯誤 ${tries} 次。</p><p>能源、飢餓、貧窮——從節電、均衡飲食到捐發票，永續就在日常行動中！</p><button class="main" onclick="start()">再玩一次</button></div>`)}
+M(`<div style="text-align:center"><h2>🎓 成功逃出 807 密室！</h2><p>逃脫密碼：<b>7 → 2 → 1</b></p><p>用時 ${s} 秒，密碼輸入錯誤 ${tries} 次。</p><p>能源、飢餓、貧窮——從節電、均衡飲食到捐發票，永續就在日常行動中！大洋洲的島嶼與海洋，也需要我們一起守護 🌏</p><button class="main" onclick="start()">再玩一次</button></div>`)}
 else{tries++;document.getElementById("dm").textContent="❌ 密碼錯誤，回想通過關卡的順序。"}}
 function start(){p={x:240,y:285,f:0,w:0,m:false,tx:null,ty:null};on={};log=[];stage=0;tries=0;t0=performance.now();ui();say("🧑‍🎓 你被關在 807 教室裡了！先找出四個開關的數字。");closeM()}
-function intro(){M(`<h2>🏫 SDGs 807 密室逃脫</h2><p>你是被鎖在 807 教室的學生。依序通過 <b>永續能源 → 消除飢餓 → 消除貧窮</b> 三關，再用關卡編號組成逃脫密碼！</p><p>用 ▲▼◀▶ 走動，或點教室地面讓角色走過去；靠近物品按「調查」。</p><button class="main" onclick="start()">開始</button>`)}
+function intro(){M(`<h2>🌏 大洋洲 SDGs 807 密室逃脫</h2><p>今天是「大洋洲主題週」，教室掛滿袋鼠🦘、無尾熊🐨、奇異鳥🥝與太平洋島嶼的布置。你是被鎖在 807 教室的學生。依序通過 <b>永續能源 → 消除飢餓 → 消除貧窮</b> 三關，再用關卡編號組成逃脫密碼！</p><p>用 ▲▼◀▶ 走動，或點教室地面讓角色走過去；靠近物品按「調查」。</p><button class="main" onclick="start()">開始</button>`)}
 const bind=(id,k)=>{const e=document.getElementById(id);e.addEventListener("pointerdown",ev=>{ev.preventDefault();keys[k]=1});["pointerup","pointerleave","pointercancel"].forEach(n=>e.addEventListener(n,()=>keys[k]=0))};
 [["u","u"],["d","d"],["l","l"],["r","r"]].forEach(a=>bind(...a));
 document.getElementById("act").addEventListener("pointerdown",e=>{e.preventDefault();act()});
