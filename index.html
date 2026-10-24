@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SDGs 大洋洲 807 密室逃脫</title>
+<title>SDGs 大洋洲 807 3D 密室逃脫</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f1f5ef;--card:#fff;--tx:#1d2b22;--mut:#5d6b62;--bd:#d0dad3;--ac:#2e7d4f}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111812;--card:#1c2820;--tx:#e8f0ea;--mut:#9db0a3;--bd:#33463a;--ac:#4cc17f}}
@@ -27,33 +27,35 @@ input.cd{font-size:1.8rem;text-align:center;letter-spacing:.4em;width:100%;margi
 #log div{margin:2px 0;font-size:.85rem}
 </style></head><body><main>
 <div class="card" id="nb"></div>
-<canvas id="cv" width="480" height="360"></canvas>
+<canvas id="cv" width="480" height="400"></canvas>
 <div class="card" id="msg"></div>
 <div class="pad"><div class="dp"><span></span><button id="u">▲</button><span></span><button id="l">◀</button><button id="d">▼</button><button id="r">▶</button></div><button id="act">🔍 調查</button></div>
 <div class="card"><b>📝 線索紀錄</b><div id="log" style="margin-top:4px;color:var(--mut)">尚無線索</div></div>
 </main><div id="modal"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const STG=[{n:"永續能源",s:7,f:"SDG 7：確保人人都能取得可負擔、可靠、永續的能源。大洋洲的澳洲是全球屋頂太陽能普及率最高的國家之一，許多太平洋島國也積極發展太陽能與風能。"},
 {n:"消除飢餓",s:2,f:"SDG 2：消除飢餓，實現糧食安全、改善營養並促進永續農業。大洋洲的紐西蘭與澳洲是重要的乳品與農產出口地，太平洋島國則靠芋頭、椰子與漁業維生，氣候變遷讓糧食安全更需要守護。"},
 {n:"消除貧窮",s:1,f:"SDG 1：消除各地一切形式的貧窮。隨手捐發票，能幫助老人、身心障礙者與貧困家庭。太平洋島國受海平面上升與氣候災害威脅，需要國際合作與支持，一份小小的捐贈也能傳遞關懷。"}];
 const O=[
-{x:62,y:50,e:"🌀",n:"左前方電扇開關",t:"sw",v:8,k:"fl"},
-{x:430,y:50,e:"💡",n:"右前方電燈開關",t:"sw",v:2,k:"lr"},
-{x:55,y:312,e:"🌀",n:"左後方電扇開關",t:"sw",v:0,k:"rl"},
-{x:240,y:46,e:"🖥️",n:"前方大屏開關",t:"sw",v:7,k:"sc"},
-{x:430,y:300,e:"🔌",n:"電源總控箱",t:"ctl"},
-{x:430,y:150,e:"🥗",n:"營養公告",t:"nut"},
-{x:200,y:322,e:"🏯",n:"發票捐贈罐",t:"jar"},
-{x:330,y:322,e:"📄",n:"愛心公告",t:"d",s:"愛心公告：發票捐贈所得，將用於救助「老人」、「身心障礙者（殘）」與「貧窮家庭（窮）」。",lg:1},
-{x:44,y:180,e:"📚",n:"書櫃",t:"d",s:"書中夾著紙條：「歡迎來到 807 密室！離開前須通過三關：能源、飢餓、貧窮。四個開關的數字，要到總控箱輸入。」",lg:1},
-{x:160,y:46,e:"🕐",n:"時鐘",t:"d",s:"時鐘停在 8 點 07 分，似乎在暗示這間教室的名字。旁邊貼著澳洲、紐西蘭、斐濟的時區貼紙。"},
-{x:120,y:322,e:"🏄",n:"衝浪板置物櫃",t:"d",s:"裡面只有一塊衝浪板和潛水鏡，沒有線索。大洋洲的孩子從小就愛海洋。"},
-{x:370,y:46,e:"🗺️",n:"大洋洲地圖",t:"d",s:"大洋洲包含澳洲、紐西蘭、巴布亞紐幾內亞，以及斐濟、薩摩亞、吐瓦魯、吉里巴斯等許多太平洋島國。海平面上升是島國面臨的重大挑戰。",lg:1},
-{x:446,y:222,e:"🚪",n:"教室大門",t:"door"}];
-const RC=[[110,120,64,34],[200,120,64,34],[290,120,64,34],[110,200,64,34],[200,200,64,34],[290,200,64,34],[320,66,60,24]];
-const cv=document.getElementById("cv"),cx=cv.getContext("2d");
+{x:72,y:56,e:"🌀",n:"左前方電扇開關",t:"sw",v:8,k:"fl"},
+{x:532,y:56,e:"💡",n:"右前方電燈開關",t:"sw",v:2,k:"lr"},
+{x:63,y:384,e:"🌀",n:"左後方電扇開關",t:"sw",v:0,k:"rl"},
+{x:294,y:52,e:"🖥️",n:"前方大屏開關",t:"sw",v:7,k:"sc"},
+{x:532,y:369,e:"🔌",n:"電源總控箱",t:"ctl"},
+{x:532,y:182,e:"🥗",n:"營養公告",t:"nut"},
+{x:244,y:396,e:"🏯",n:"發票捐贈罐",t:"jar"},
+{x:406,y:396,e:"📄",n:"愛心公告",t:"d",s:"愛心公告：發票捐贈所得，將用於救助「老人」、「身心障礙者（殘）」與「貧窮家庭（窮）」。",lg:1},
+{x:49,y:219,e:"📚",n:"書櫃",t:"d",s:"書中夾著紙條：「歡迎來到 807 密室！離開前須通過三關：能源、飢餓、貧窮。四個開關的數字，要到總控箱輸入。」",lg:1},
+{x:194,y:52,e:"🕐",n:"時鐘",t:"d",s:"時鐘停在 8 點 07 分，似乎在暗示這間教室的名字。旁邊貼著澳洲、紐西蘭、斐濟的時區貼紙。"},
+{x:144,y:396,e:"🏄",n:"衝浪板置物櫃",t:"d",s:"裡面只有一塊衝浪板和潛水鏡，沒有線索。大洋洲的孩子從小就愛海洋。"},
+{x:456,y:52,e:"🗺️",n:"大洋洲地圖",t:"d",s:"大洋洲包含澳洲、紐西蘭、巴布亞紐幾內亞，以及斐濟、薩摩亞、吐瓦魯、吉里巴斯等許多太平洋島國。海平面上升是島國面臨的重大挑戰。",lg:1},
+{x:36,y:272,e:"🚪",n:"教室大門",t:"door"},
+{x:488,y:125,e:"👩‍🏫",n:"小婷老師",t:"npc",id:0},{x:660,y:112,e:"👩‍💼",n:"方校長",t:"npc",id:1},{x:144,y:306,e:"👦",n:"Jason 同學",t:"npc",id:2},{x:382,y:316,e:"👦",n:"Ivn 同學",t:"npc",id:3},{x:660,y:322,e:"🧑‍🏫",n:"輔導主任",t:"npc",id:4}];
+const RC=[[132,144,64,34],[244,144,64,34],[356,144,64,34],[132,244,64,34],[244,244,64,34],[356,244,64,34],[394,76,60,24],[600,50,100,30],[596,382,90,30]];
+const cv=document.getElementById("cv");
 let p,keys={},on={},log=[],paused=true,t0=0,near=null,stage=0,tries=0;
-function hit(x,y){if(x<34||x>446||y<34||y>326)return true;
+function hit(x,y){if(!((x>=34&&x<=554&&y>=34&&y<=424)||(x>=550&&x<=590&&((y>=100&&y<=140)||(y>=310&&y<=350)))||(x>=584&&x<=730&&((y>=34&&y<=200)||(y>=244&&y<=424)))))return true;
 for(const r of RC)if(x>r[0]-10&&x<r[0]+r[2]+10&&y>r[1]-10&&y<r[1]+r[3]+10)return true;
 for(const o of O)if(o.t!="door"&&Math.hypot(x-o.x,y-o.y)<24)return true;return false}
 function step(dt){const dx=(keys.r?1:0)-(keys.l?1:0),dy=(keys.d?1:0)-(keys.u?1:0);const n=Math.hypot(dx,dy)||1,v=125*dt;
@@ -62,24 +64,69 @@ const ox=p.x,oy=p.y,nx=p.x+mx*v,ny=p.y+my*v;if(!hit(nx,p.y))p.x=nx;if(!hit(p.x,n
 p.m=Math.hypot(p.x-ox,p.y-oy)>.1;if(p.m){p.w+=dt*12;if(Math.abs(mx)>Math.abs(my))p.f=mx>0?3:2;else p.f=my>0?0:1}else{p.w=0;if(mx||my)p.tx=null}
 let b=null,bd=50;for(const o of O){const d=Math.hypot(p.x-o.x,p.y-o.y);if(d<bd){bd=d;b=o}}
 if(b!==near){near=b;document.getElementById("act").textContent=b?"🔍 "+b.n:"🔍 調查"}}
-function drawStu(){const x=p.x,y=p.y,s=p.m?Math.sin(p.w):0,b=p.m?Math.abs(Math.cos(p.w))*2:0,f=p.f;
-cx.fillStyle="#0003";cx.beginPath();cx.ellipse(x,y+15,11,4,0,0,7);cx.fill();
-cx.fillStyle="#2b3a67";cx.fillRect(x-6,y+6,5,9+s*3);cx.fillRect(x+1,y+6,5,9-s*3);
-cx.fillStyle="#3b6fd8";cx.fillRect(x-8,y-6-b,16,14);
-if(f<2){cx.fillStyle="#f1c9a0";cx.fillRect(x-11,y-5-b+s*2,3,9);cx.fillRect(x+8,y-5-b-s*2,3,9)}
-if(f==1){cx.fillStyle="#d94f4f";cx.fillRect(x-7,y-4-b,14,11)}
-cx.fillStyle="#f1c9a0";cx.fillRect(x-7,y-17-b,14,12);
-cx.fillStyle="#3a2a1a";cx.fillRect(x-8,y-19-b,16,f==1?12:5);
-cx.fillStyle="#222";if(f==0){cx.fillRect(x-4,y-11-b,2,3);cx.fillRect(x+2,y-11-b,2,3)}if(f==2)cx.fillRect(x-6,y-11-b,2,3);if(f==3)cx.fillRect(x+4,y-11-b,2,3)}
-function draw(){cx.fillStyle="#2f6f8f";cx.fillRect(0,0,480,360);
-for(let i=0;i<12;i++)for(let j=0;j<8;j++){cx.fillStyle=(i+j)%2?"#f3e7c9":"#e9dbb4";cx.fillRect(24+i*38,24+j*39,38,39)}
-cx.fillStyle="#222";cx.fillRect(190,24,100,20);cx.fillStyle="#7a4a21";cx.fillRect(456,190,24,64);
-cx.fillStyle="#fff";cx.font="bold 11px sans-serif";cx.textAlign="center";cx.fillText("807 大洋洲教室",420,346);cx.font="16px sans-serif";["🦘","🐨","🥝","🏝️","🌺","🐠","🦘","🐢"].forEach((e,i)=>cx.fillText(e,40+i*58,12));["🐠","🏄","🌴","🐋","🥥","🦜"].forEach((e,i)=>cx.fillText(e,40+i*66,346));
-for(const r of RC){cx.fillStyle="#a8743c";cx.fillRect(r[0],r[1],r[2],r[3]);cx.strokeStyle="#6b4520";cx.strokeRect(r[0],r[1],r[2],r[3])}
-cx.font="26px sans-serif";cx.textBaseline="middle";
-for(const o of O){if(o===near){cx.strokeStyle="#ffd700";cx.lineWidth=3;cx.beginPath();cx.arc(o.x,o.y,22,0,7);cx.stroke()}
-cx.fillText(o.e,o.x,o.y+1);if(o.t=="sw"&&on[o.k]){cx.font="14px sans-serif";cx.fillText("✅",o.x+16,o.y-14);cx.font="26px sans-serif"}}
-drawStu();if(p.tx!=null){cx.strokeStyle="#ffd700";cx.lineWidth=2;cx.beginPath();cx.arc(p.tx,p.ty,8+Math.sin(performance.now()/120)*2,0,7);cx.stroke()}}
+const U=40,X=a=>(a-240)/U,Z=a=>(a-180)/U,V3=THREE.Vector3;
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.setSize(480,400,false);
+const sc=new THREE.Scene();sc.background=new THREE.Color(0x9fd6ea);
+const cam=new THREE.PerspectiveCamera(55,480/400,.1,60);cam.position.set(0,5,8);
+sc.add(new THREE.AmbientLight(0xffffff,.8));const dl=new THREE.DirectionalLight(0xffffff,.55);dl.position.set(3,8,4);sc.add(dl);
+const bx=(w,h,d,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(x,y,z);sc.add(m);return m};
+const PK=[];
+const ck=document.createElement("canvas");ck.width=14;ck.height=10;{const g=ck.getContext("2d");for(let i=0;i<14;i++)for(let j=0;j<10;j++){g.fillStyle=(i+j)%2?"#f3e7c9":"#e9dbb4";g.fillRect(i,j,1,1)}}
+const ct=new THREE.CanvasTexture(ck);ct.magFilter=THREE.NearestFilter;
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(13.5,10.25),new THREE.MeshLambertMaterial({map:ct}));fl.rotation.x=-Math.PI/2;fl.position.set(X(294),0,Z(229));sc.add(fl);const FL=[fl];
+const flr=(x0,y0,x1,y1,c)=>{FL.push(bx((x1-x0)/U,.08,(y1-y0)/U,c,X((x0+x1)/2),-.04,Z((y0+y1)/2)))};
+flr(576,24,744,200,0x9c4a4a);flr(576,244,744,434,0x6fae8a);flr(560,98,580,142,0xd8cfae);flr(560,308,580,352,0xd8cfae);
+const WC=0xcfe8f0;bx(18.3,3,.2,WC,X(382),1.5,Z(24)-.1);bx(.2,3,10.5,WC,X(24)-.1,1.5,Z(229));
+const ew=(y0,y1)=>bx(.3,3,(y1-y0)/U,WC,X(570),1.5,Z((y0+y1)/2));ew(24,100);ew(140,310);ew(350,434);
+bx(.2,3,10.5,WC,X(748),1.5,Z(229));bx(168/U,.9,1.1,0xb0a090,X(660),.45,Z(222));bx(168/U,.9,.2,WC,X(660),.45,Z(436));
+bx(.12,2.2,1.6,0x7a4a21,-5.38,1.1,Z(272));[-1.4,1.4,4.2].forEach(z=>bx(.05,1.1,1.6,0x8ac6e8,-5.38,1.8,z));bx(2.6,1.1,.1,0x111111,X(294),1.7,-3.82);
+for(const r of RC){const w=r[2]/U,d=r[3]/U,x=X(r[0]+r[2]/2),z=Z(r[1]+r[3]/2);bx(w,.08,d,0xc89556,x,.76,z);bx(w-.12,.72,d-.1,0x8a6035,x,.36,z)}
+function emo(e,s){const c=document.createElement("canvas");c.width=c.height=128;const g=c.getContext("2d");g.font="92px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(e,64,70);
+const m=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));m.scale.set(s,s,1);return m}
+function lab(t,x,y,z,ry){const c=document.createElement("canvas");c.width=512;c.height=96;const g=c.getContext("2d");g.fillStyle="#2f6f8f";g.fillRect(0,0,512,96);g.fillStyle="#fff";g.font="bold 52px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(t,256,50);
+const m=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.5),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));m.position.set(x,y,z);m.rotation.y=ry||0;sc.add(m)}
+lab("807 大洋洲教室",X(294),2.65,-3.84,0);lab("校長室",X(570)-.25,2.55,Z(120),-Math.PI/2);lab("輔導室",X(570)-.25,2.55,Z(330),-Math.PI/2);lab("出口大門",-5.3,2.65,Z(272),Math.PI/2);
+["🦘","🐨","🥝","🏝️","🌺","🐠"].forEach((e,i)=>{const s=emo(e,.6);s.position.set([-4.6,-3.2,-1.8,3.6,5.2,6.8][i],2.5,-3.8);sc.add(s)});
+[["🏆",712,60,1.1],["🪴",728,185,.7],["🪴",728,260,.7],["🛋️",704,405,.8]].forEach(a=>{const s=emo(a[0],1);s.position.set(X(a[1]),a[3],Z(a[2]));sc.add(s)});
+const TC={sw:0xffcc33,ctl:0x888888,nut:0x7bc67b,jar:0xc0392b,d:0xb0a090,door:0x7a4a21};
+for(const o of O){if(o.t=="door"||o.t=="npc")continue;const b=bx(.5,.7,.5,TC[o.t]||0xb0a090,X(o.x),.35,Z(o.y));b.userData.o=o;PK.push(b);
+const s=emo(o.e,1.1);s.position.set(X(o.x),1.25,Z(o.y));s.userData.o=o;sc.add(s);PK.push(s);
+if(o.k){o.ck=emo("✅",.5);o.ck.position.set(X(o.x),1.95,Z(o.y));o.ck.visible=false;sc.add(o.ck)}}
+const dm=bx(.1,2.2,1.6,0x000000,-5.3,1.1,Z(272));dm.visible=false;dm.userData.o=O.find(o=>o.t=="door");PK.push(dm);
+const dsp=emo("🚪",.8);dsp.position.set(-5,2.5,Z(272));sc.add(dsp);
+const ring=new THREE.Mesh(new THREE.RingGeometry(.45,.58,32),new THREE.MeshBasicMaterial({color:0xffd700,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.03;ring.visible=false;sc.add(ring);
+const tg=new THREE.Mesh(new THREE.RingGeometry(.15,.25,24),new THREE.MeshBasicMaterial({color:0xffd700,side:THREE.DoubleSide}));tg.rotation.x=-Math.PI/2;tg.position.y=.04;tg.visible=false;sc.add(tg);
+const SM=(()=>{const c=document.createElement("canvas");c.width=32;c.height=32;const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,32,32);g.fillStyle="#5b4bb7";for(let i=0;i<32;i+=4)g.fillRect(i,0,2,32);const t=new THREE.CanvasTexture(c);t.magFilter=THREE.NearestFilter;return new THREE.MeshLambertMaterial({map:t})})();
+const sleeve=a=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.17,.2,.18),SM);m.position.y=.13;a.add(m)};
+const av=new THREE.Group();sc.add(av);
+const part=(w,h,d,c,x,y,z,par)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(x,y,z);(par||av).add(m);return m};
+const lL=new THREE.Group(),lR=new THREE.Group();lL.position.set(-.13,.5,0);lR.position.set(.13,.5,0);av.add(lL,lR);
+[lL,lR].forEach(l=>{part(.25,.28,.28,0x3b3bd1,0,-.14,0,l);part(.18,.16,.2,0xf1c9a0,0,-.36,0,l);part(.2,.06,.26,0xffffff,0,-.47,.02,l)});
+part(.55,.55,.3,0,0,.78,0).material=SM;part(.3,.08,.34,0x5b3fc9,0,1.08,0);part(.4,.4,.4,0xf1c9a0,0,1.28,0);part(.44,.14,.44,0x3a2a1a,0,1.52,0);part(.4,.4,.15,0xd94f4f,0,.8,-.22);
+part(.07,.07,.02,0x222222,-.1,1.3,.21);part(.07,.07,.02,0x222222,.1,1.3,.21);
+const aL=part(.14,.45,.14,0xf1c9a0,-.36,.78,0),aR=part(.14,.45,.14,0xf1c9a0,.36,.78,0);sleeve(aL);sleeve(aR);
+const NC={0:{top:0xc77dd8,bot:0x3b3b5c,skin:0xf1c9a0,hair:0x2a1a12,pony:1,role:"老師"},1:{top:0x2c5a8a,bot:0x1e3a5f,skin:0xf1c9a0,hair:0x3a2a1a,skirt:1,long:1,role:"校長"},2:{top:0x2e9d58,bot:0x333a4a,skin:0xf1c9a0,hair:0x1a1a1a,uni:1,role:"同學"},3:{top:0xe58a2b,bot:0x666a73,skin:0xe9bf93,hair:0x4a2f1a,glass:1,uni:1,curly:1,role:"同學"},4:{top:0x1f8f8a,bot:0x2a2a3a,skin:0xf1c9a0,hair:0x1a1a1a,bob:1,role:"輔導主任"}};
+function mkNPC(c){const g=new THREE.Group();const pt=(w,h,d,col,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:col}));m.position.set(x,y,z);g.add(m);return m};
+if(c.skirt)pt(.64,.85,.42,c.bot,0,.43,0);else if(c.uni){for(const x of[-.13,.13]){pt(.26,.33,.28,0x3b3bd1,x,.465,0);pt(.18,.24,.2,c.skin,x,.18,0);pt(.2,.06,.26,0xffffff,x,.03,.02)}}else{pt(.22,.5,.25,c.bot,-.13,.25,0);pt(.22,.5,.25,c.bot,.13,.25,0)}
+const bd=pt(.55,.55,.3,c.top,0,.9,0);const a1=pt(.14,.45,.14,c.skin,-.36,.9,0),a2=pt(.14,.45,.14,c.skin,.36,.9,0);
+if(c.uni){bd.material=SM;pt(.3,.08,.34,0x5b3fc9,0,1.2,0);sleeve(a1);sleeve(a2)}
+pt(.4,.4,.4,c.skin,0,1.4,0);pt(.44,.14,.44,c.hair,0,1.64,0);pt(.07,.07,.02,0x222222,-.1,1.42,.21);pt(.07,.07,.02,0x222222,.1,1.42,.21);
+if(c.pony){pt(.12,.12,.14,c.hair,0,1.58,-.28);pt(.1,.42,.1,c.hair,0,1.3,-.32)}
+if(c.long){pt(.44,.75,.12,c.hair,0,1.25,-.22);pt(.05,.5,.1,c.hair,-.24,1.35,0);pt(.05,.5,.1,c.hair,.24,1.35,0)}
+if(c.glass){pt(.13,.09,.02,0x111111,-.1,1.42,.22);pt(.13,.09,.02,0x111111,.1,1.42,.22)}
+if(c.bob){pt(.05,.3,.38,c.hair,-.23,1.44,0);pt(.05,.22,.38,c.hair,.23,1.48,0);pt(.46,.3,.1,c.hair,0,1.46,-.22);pt(.3,.08,.05,c.hair,-.06,1.6,.22);pt(.06,.1,.06,0xffd700,-.24,1.3,.05);pt(.06,.1,.06,0xffd700,.24,1.3,.05);pt(.56,.06,.32,0xf4f1ea,0,1.1,0)}
+if(c.curly){for(const[x,y,z]of[[-.15,1.68,.12],[.15,1.68,.12],[0,1.74,.1],[-.15,1.68,-.12],[.15,1.68,-.12],[0,1.74,-.1],[-.22,1.58,0],[.22,1.58,0],[-.1,1.72,0],[.1,1.72,0],[0,1.78,0],[-.2,1.5,-.15],[.2,1.5,-.15],[0,1.55,-.24],[-.2,1.62,.18],[.2,1.62,.18],[0,1.66,.22]]){const m=new THREE.Mesh(new THREE.SphereGeometry(.12,8,6),new THREE.MeshLambertMaterial({color:c.hair}));m.position.set(x,y,z);g.add(m)}}
+return g}
+function nameTag(t){const c=document.createElement("canvas");c.width=256;c.height=64;const g=c.getContext("2d");g.fillStyle="#000a";g.fillRect(0,8,256,48);g.fillStyle="#fff";g.font="bold 30px sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText(t,128,33);
+const m=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));m.scale.set(1.6,.4,1);return m}
+const NG=[];O.filter(o=>o.t=="npc").forEach(o=>{const g=mkNPC(NC[o.id]);g.position.set(X(o.x),0,Z(o.y));sc.add(g);g.traverse(m=>{if(m.isMesh){m.userData.o=o;PK.push(m)}});const t=nameTag(o.n);t.position.set(0,2.1,0);g.add(t);NG.push({g,o})});
+const FR=[0,Math.PI,-Math.PI/2,Math.PI/2];
+function draw(){if(!p)return;const tt=performance.now()/1000;NG.forEach((n,i)=>{const dx=X(p.x)-n.g.position.x,dz=Z(p.y)-n.g.position.z;if(Math.hypot(dx,dz)<3.5)n.g.rotation.y=Math.atan2(dx,dz);n.g.position.y=Math.sin(tt*2+i)*.02});for(const o of O)if(o.ck)o.ck.visible=!!on[o.k];
+const px=X(p.x),pz=Z(p.y),s=p.m?Math.sin(p.w):0;av.position.set(px,p.m?Math.abs(Math.cos(p.w))*.06:0,pz);av.rotation.y=FR[p.f];
+lL.rotation.x=s*.7;lR.rotation.x=-s*.7;aL.rotation.x=-s*.6;aR.rotation.x=s*.6;
+const cxx=Math.max(-2,Math.min(10.5,px));cam.position.lerp(new V3(cxx,5.2,pz+4.6),.15);cam.lookAt(cxx,.8,pz-1.2);
+ring.visible=!!near;if(near)ring.position.set(X(near.x),.03,Z(near.y));
+tg.visible=p.tx!=null;if(p.tx!=null)tg.position.set(X(p.tx),.04,Z(p.ty));R.render(sc,cam)}
 function loop(){requestAnimationFrame(loop);if(!paused)step(1/60);draw()}
 function ui(){document.getElementById("nb").innerHTML=`<span class="badge">通關編號</span> `+STG.map((s,i)=>`SDG${s.s} <b>${stage>i?"✅ "+s.s:"？"}</b>`).join("　");
 document.getElementById("log").innerHTML=log.length?log.map(l=>"<div>• "+l+"</div>").join(""):"尚無線索"}
@@ -93,7 +140,14 @@ else if(o.t=="sw"){if(stage>0){say("開關已經設定完成。");return}on[o.k]
 else if(o.t=="ctl"){if(stage>0)say("電力已恢復，總控箱運作正常。");else ctl()}
 else if(o.t=="nut"){if(stage<1)say("🥗 公告欄一片漆黑，電力尚未恢復，看不清楚上面寫什麼。");else if(stage>1)say("🥗 你已完成營養均衡公告。");else nut()}
 else if(o.t=="jar"){if(stage<2)say("🏯 罐子上了鎖，貼著字條：「先吃飽、有力氣，才能做公益」。");else if(stage>2)say("🏯 你已完成發票捐贈罐的謎題。");else jar()}
-else door()}
+else if(o.t=="npc")talk(o);else door()}
+const NT=[
+["同學，807 教室停電了。先找出四個開關的數字：右前電燈、左前電扇、左後電扇、前方大屏，再到教室右後方的電源總控箱輸入。校長室和輔導室在教室右側，有空可以去找他們聊聊。","電力恢復了！右側的營養公告亮起來了，試著把食物配對到「六大類營養來源」。","營養均衡才有力氣做公益。看看櫃子上的發票捐贈罐，下聯請參考「愛心公告」。","三關都通過了！把關卡編號依序組合，就是大門的密碼。"],
+["同學好！我們的校訓是「有禮貌、愛學習、守紀律」。歡迎來到校長室，這是大洋洲主題週，SDGs 共有 17 項目標，今天的關卡是 SDG 7 能源、SDG 2 飢餓、SDG 1 貧窮。","很好，電力恢復了。下一關的編號是 2，記住了嗎？做事有條理，就是守紀律的表現。","最後一關是消除貧窮，編號 1。願意幫助別人，是有禮貌又有愛心的表現。請記好通過關卡的順序。","恭喜你！密碼就是通過關卡的編號歷程：先 7、再 2、最後 1。快去大門吧！有禮貌、愛學習、守紀律，你都做到了！"],
+["我剛才路過左後方的電扇，開關旁好像貼著一個小數字。左前方的電扇也有，但數字不一樣喔！","那張營養公告拼好了嗎？別忘了還有「油脂與堅果種子類」。","我捐過發票！下聯的字要照著愛心公告的順序選。","出口大門在教室左側，加油！"],
+["總控箱上寫的順序是：右前電燈、左前電扇、左後電扇、前方大屏，別弄錯了。","食物配對如果卡住，紅框表示那一題還沒答對。","發票捐贈罐的春聯，橫批是「消除貧窮」。","我們一起逃出去吧！"],
+["遇到困難別慌張，先深呼吸。電力問題可以從四個開關找答案。","六大類營養來源都要吃，身體和心理才會健康。","貧窮不只是缺錢，也可能缺少機會與支持。捐發票就是一種小小的支持。","你做得很好！去大門吧，記得照通過關卡的順序輸入。"]];
+function talk(o){const l=NT[o.id][Math.min(stage,3)];M(`<span class="badge">${NC[o.id].role}</span><h3>${o.n}</h3><p>${l}</p><button class="main" onclick="closeM()">好的</button>`);addLog(o.n+"：「"+l+"」")}
 function pass(n,extra){stage=n;ui();const s=STG[n-1];
 M(`<span class="badge">SDG ${s.s} ${s.n}</span><h3>✅ 關卡通過！</h3>${extra||""}<p>${s.f}</p><p style="font-size:1.4rem;text-align:center">取得關卡編號：<b>${s.s}</b></p><button class="main" onclick="closeM()">繼續搜索</button>`);addLog(`通過 SDG ${s.s}（${s.n}）`);say(`取得編號 ${s.s}！`)}
 function ctl(){M(`<span class="badge">SDG 7</span><h3>🔌 電源總控箱</h3><p>面板：「請依序輸入四個開關的數字：<b>右前電燈 → 左前電扇 → 左後電扇 → 前方大屏</b>」</p><input class="cd" id="cd" maxlength="4" inputmode="numeric" placeholder="????"><div id="dm" style="min-height:1.4em"></div><button class="main" onclick="tryCtl()">確認</button> <button class="main gr" onclick="closeM()">返回</button>`)}
@@ -113,16 +167,18 @@ M(`<h3>🚪 807 密室大門</h3><p>請依 SDGs「通過關卡的編號歷程」
 function tryPw(){if(document.getElementById("pw").value=="721"){const s=Math.floor((performance.now()-t0)/1000);paused=true;
 M(`<div style="text-align:center"><h2>🎓 成功逃出 807 密室！</h2><p>逃脫密碼：<b>7 → 2 → 1</b></p><p>用時 ${s} 秒，密碼輸入錯誤 ${tries} 次。</p><p>能源、飢餓、貧窮——從節電、均衡飲食到捐發票，永續就在日常行動中！大洋洲的島嶼與海洋，也需要我們一起守護 🌏</p><button class="main" onclick="start()">再玩一次</button></div>`)}
 else{tries++;document.getElementById("dm").textContent="❌ 密碼錯誤，回想通過關卡的順序。"}}
-function start(){p={x:240,y:285,f:0,w:0,m:false,tx:null,ty:null};on={};log=[];stage=0;tries=0;t0=performance.now();ui();say("🧑‍🎓 你被關在 807 教室裡了！先找出四個開關的數字。");closeM()}
-function intro(){M(`<h2>🌏 大洋洲 SDGs 807 密室逃脫</h2><p>今天是「大洋洲主題週」，教室掛滿袋鼠🦘、無尾熊🐨、奇異鳥🥝與太平洋島嶼的布置。你是被鎖在 807 教室的學生。依序通過 <b>永續能源 → 消除飢餓 → 消除貧窮</b> 三關，再用關卡編號組成逃脫密碼！</p><p>用 ▲▼◀▶ 走動，或點教室地面讓角色走過去；靠近物品按「調查」。</p><button class="main" onclick="start()">開始</button>`)}
+function start(){p={x:294,y:350,f:0,w:0,m:false,tx:null,ty:null};on={};log=[];stage=0;tries=0;t0=performance.now();ui();say("🧑‍🎓 你被關在 807 教室裡了！先找出四個開關的數字。");closeM()}
+function intro(){M(`<h2>🌏 大洋洲 SDGs 807 3D 密室逃脫</h2><p>今天是「大洋洲主題週」，教室掛滿袋鼠🦘、無尾熊🐨、奇異鳥🥝與太平洋島嶼的布置。你是被鎖在 807 教室的學生。依序通過 <b>永續能源 → 消除飢餓 → 消除貧窮</b> 三關，再用關卡編號組成逃脫密碼！</p><p>教室裡有 Jason、Ivn 同學和小婷老師；右側通往校長室（方校長）與輔導室（輔導主任），都可以對話取得提示。</p><p>用 ▲▼◀▶ 走動，或點教室地面讓角色走過去；靠近物品按「調查」。</p><button class="main" onclick="start()">開始</button>`)}
 const bind=(id,k)=>{const e=document.getElementById(id);e.addEventListener("pointerdown",ev=>{ev.preventDefault();keys[k]=1});["pointerup","pointerleave","pointercancel"].forEach(n=>e.addEventListener(n,()=>keys[k]=0))};
 [["u","u"],["d","d"],["l","l"],["r","r"]].forEach(a=>bind(...a));
 document.getElementById("act").addEventListener("pointerdown",e=>{e.preventDefault();act()});
 const km={w:"u",ArrowUp:"u",s:"d",ArrowDown:"d",a:"l",ArrowLeft:"l",d:"r",ArrowRight:"r"};
 addEventListener("keydown",e=>{if(document.activeElement.tagName=="INPUT"||document.activeElement.tagName=="SELECT")return;if(km[e.key]){keys[km[e.key]]=1;e.preventDefault()}if(e.key=="e"||e.key==" ")act()});
 addEventListener("keyup",e=>{if(km[e.key])keys[km[e.key]]=0});
-cv.addEventListener("pointerdown",e=>{if(paused)return;const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*480,y=(e.clientY-r.top)/r.height*360;let t=null;for(const o of O)if(Math.hypot(x-o.x,y-o.y)<24)t=o;
-if(t&&Math.hypot(p.x-t.x,p.y-t.y)<50){near=t;act();return}
-if(t){const a=Math.atan2(p.y-t.y,p.x-t.x);p.tx=t.x+Math.cos(a)*34;p.ty=t.y+Math.sin(a)*34}else{p.tx=Math.max(34,Math.min(446,x));p.ty=Math.max(34,Math.min(326,y))}});
-p={x:240,y:285,f:0,w:0,m:false,tx:null,ty:null};ui();say("🧑‍🎓 在 807 教室走動，靠近物品後按「調查」。");intro();loop();
+const RAY=new THREE.Raycaster(),V2=new THREE.Vector2();
+cv.addEventListener("pointerdown",e=>{if(paused)return;const r=cv.getBoundingClientRect();V2.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);RAY.setFromCamera(V2,cam);
+const h=RAY.intersectObjects(PK,false)[0],t=h&&h.object.userData.o;
+if(t){if(Math.hypot(p.x-t.x,p.y-t.y)<50){near=t;act();return}const a=Math.atan2(p.y-t.y,p.x-t.x);p.tx=t.x+Math.cos(a)*34;p.ty=t.y+Math.sin(a)*34}
+else{const g=RAY.intersectObjects(FL)[0];if(g){p.tx=Math.max(34,Math.min(730,g.point.x*U+240));p.ty=Math.max(34,Math.min(424,g.point.z*U+180))}}});
+p={x:294,y:350,f:0,w:0,m:false,tx:null,ty:null};ui();say("🧑‍🎓 在 807 教室走動，靠近物品後按「調查」。");intro();loop();
 </script></body></html>
